@@ -35,11 +35,9 @@ type AccountsGetQueryParams struct {
 	PageSize  int `schema:"pagesize,omitempty"`
 	// https://restdocs.e-conomic.com/#filtering
 	// Filterable properties: accountNumber, accountType, balance, barred, blockDirectEntries, debitCredit, name
-	Filter string `schema:"filter"`
+	Filter string `schema:"filter,omitempty"`
 	// https://restdocs.e-conomic.com/#sorting
-	// Sortable properties: accountNumber, accountType, balance, blockDirectEntries, debitCredit, name
-	// Default sorting: accountNumber : ascending
-	Sort string `schema:"sort"`
+	Sort string `schema:"sort,omitempty"`
 }
 
 func (r AccountsGetRequest) RequiredProperties() []string {

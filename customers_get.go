@@ -35,9 +35,9 @@ type CustomersGetQueryParams struct {
 	SkipPages int `schema:"skippages,omitempty"`
 	PageSize  int `schema:"pagesize,omitempty"`
 	// https://restdocs.e-conomic.com/#filtering
-	Filter string `schema:"filter"`
+	Filter string `schema:"filter,omitempty"`
 	// https://restdocs.e-conomic.com/#sorting
-	Sort string `schema:"sort"`
+	Sort string `schema:"sort,omitempty"`
 }
 
 func (r CustomersGetRequest) RequiredProperties() []string {
