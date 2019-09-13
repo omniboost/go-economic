@@ -30,6 +30,85 @@ func (c *Client) NewAccountsGetQueryParams() *AccountsGetQueryParams {
 }
 
 type AccountsGetQueryParams struct {
+	// https://restdocs.e-conomic.com/#pagination
+	SkipPages int `schema:"skippages,omitempty"`
+	PageSize  int `schema:"pagesize,omitempty"`
+	// https://restdocs.e-conomic.com/#filtering
+	// Filterable properties: accountNumber, accountType, balance, barred, blockDirectEntries, debitCredit, name
+	Filter string `schema:"filter"`
+	// https://restdocs.e-conomic.com/#sorting
+	// Sortable properties: accountNumber, accountType, balance, blockDirectEntries, debitCredit, name
+	// Default sorting: accountNumber : ascending
+	Sort string `schema:"sort"`
+}
+
+func (r AccountsGetRequest) RequiredProperties() []string {
+	return []string{
+		"attention.self",
+		"currency",
+		"customerContact.self",
+		"customerGroup",
+		"customerGroup.self",
+		"defaultDeliveryLocation.self",
+		"invoices.self",
+		"layout.self",
+		"name",
+		"paymentTerms",
+		"paymentTerms.self",
+		"salesPerson.self",
+		"self",
+		"templates.self",
+		"totals.self",
+		"vatZone",
+		"vatZone.self",
+	}
+}
+
+func (r AccountsGetRequest) FilterableProperties() []string {
+	return []string{
+		"address",
+		"balance",
+		"barred",
+		"city",
+		"corporateIdentificationNumber",
+		"country",
+		"creditLimit",
+		"currency",
+		"customerNumber",
+		"ean",
+		"email",
+		"lastUpdated",
+		"mobilePhone",
+		"name",
+		"publicEntryNumber",
+		"telephoneAndFaxNumber",
+		"vatNumber",
+		"website",
+		"zip",
+	}
+}
+
+func (r AccountsGetRequest) SortableProperties() []string {
+	return []string{
+		"address",
+		"balance",
+		"city",
+		"corporateIdentificationNumber",
+		"country",
+		"creditLimit",
+		"currency",
+		"customerNumber",
+		"ean",
+		"email",
+		"lastUpdated",
+		"mobilePhone",
+		"name",
+		"publicEntryNumber",
+		"telephoneAndFaxNumber",
+		"vatNumber",
+		"website",
+		"zip",
+	}
 }
 
 func (p AccountsGetQueryParams) ToURLValues() (url.Values, error) {
