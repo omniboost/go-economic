@@ -170,7 +170,7 @@ func (c *Client) GetEndpointURL(relative string, pathParams PathParams) (url.URL
 	params := pathParams.Params()
 	err = tmpl.Execute(buf, params)
 	if err != nil {
-		log.Fatal(err)
+		return clientURL, err
 	}
 	clientURL.Path = buf.String()
 

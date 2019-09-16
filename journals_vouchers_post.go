@@ -31,14 +31,6 @@ func (c *Client) NewJournalsVouchersPostQueryParams() *JournalsVouchersPostQuery
 }
 
 type JournalsVouchersPostQueryParams struct {
-	// https://restdocs.e-conomic.com/#pagination
-	SkipPages int `schema:"skippages,omitempty"`
-	PageSize  int `schema:"pagesize,omitempty"`
-	// https://restdocs.e-conomic.com/#filtering
-	// Filterable properties: accountNumber, accountType, balance, barred, blockDirectEntries, debitCredit, name
-	Filter string `schema:"filter,omitempty"`
-	// https://restdocs.e-conomic.com/#sorting
-	Sort string `schema:"sort,omitempty"`
 }
 
 func (r JournalsVouchersPostRequest) RequiredProperties() []string {

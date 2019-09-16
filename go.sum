@@ -1,5 +1,7 @@
 github.com/a-h/generate v0.0.0-20190312091541-e59c34d33fb3 h1:Ddgcglj3p+q6QqZ5n48lh7ZysGiKjUgdGOskKSik0xY=
 github.com/a-h/generate v0.0.0-20190312091541-e59c34d33fb3/go.mod h1:traiLYQ0YD7qUMCdjo6/jSaJRPHXniX4HVs+PhEhYpc=
+github.com/cydev/zero v0.0.0-20160322155811-4a4535dd56e7 h1:OQoU2eJO+adwX0gBaIede9S+aL6aQU/0aKwktWKyl8s=
+github.com/cydev/zero v0.0.0-20160322155811-4a4535dd56e7/go.mod h1:XGbwUcTsr1d7ezSp77rqp7aaYHlX+01wCaIFUNMRY6g=
 github.com/gorilla/schema v1.1.0 h1:CamqUDOFUBqzrvxuz2vEwo8+SUdwsluFh7IlzJh30LY=
 github.com/gorilla/schema v1.1.0/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=

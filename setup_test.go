@@ -3,6 +3,7 @@ package economic_test
 import (
 	"os"
 
+	_ "github.com/joho/godotenv/autoload"
 	"github.com/omniboost/go-economic"
 )
 

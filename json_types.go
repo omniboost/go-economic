@@ -11,6 +11,10 @@ type Date struct {
 }
 
 func (d Date) MarshalJSON() ([]byte, error) {
+	if d.Time.IsZero() {
+		return json.Marshal(nil)
+	}
+
 	return json.Marshal(d.Format("2006-01-02"))
 }
 
@@ -139,10 +143,6 @@ func (l *LogTime) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(l.Time)
-}
-
-func (l LogTime) IsEmpty() bool {
-	return l.Time.IsZero()
 }
 
 func (l *LogTime) UnmarshalJSON(text []byte) (err error) {

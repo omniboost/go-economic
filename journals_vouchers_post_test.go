@@ -4,8 +4,6 @@ import (
 	"encoding/json"
 	"log"
 	"testing"
-
-	_ "github.com/joho/godotenv/autoload"
 )
 
 func TestJournalsVouchersPost(t *testing.T) {
