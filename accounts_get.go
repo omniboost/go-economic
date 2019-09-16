@@ -190,13 +190,18 @@ type AccountsGetResponseBody struct {
 	Self       string     `json:"self"`
 }
 
-func (r *AccountsGetRequest) URL() url.URL {
+func (r *AccountsGetRequest) URL() (url.URL, error) {
 	return r.client.GetEndpointURL("accounts", r.PathParams())
 }
 
 func (r *AccountsGetRequest) Do() (AccountsGetResponseBody, error) {
+	u, err := r.URL()
+	if err != nil {
+		return *r.NewResponseBody(), err
+	}
+
 	// Create http request
-	req, err := r.client.NewRequest(nil, r.Method(), r.URL(), nil)
+	req, err := r.client.NewRequest(nil, r.Method(), u, nil)
 	if err != nil {
 		return *r.NewResponseBody(), err
 	}

@@ -15,6 +15,7 @@ import (
 	"path"
 	"strings"
 	"sync"
+	"text/template"
 )
 
 const (
@@ -142,11 +143,11 @@ func (c Client) SecretToken() string {
 	return c.secretToken
 }
 
-func (c *Client) GetEndpointURL(relative string, pathParams PathParams) url.URL {
+func (c *Client) GetEndpointURL(relative string, pathParams PathParams) (url.URL, error) {
 	clientURL := c.BaseURL()
 	relativeURL, err := url.Parse(relative)
 	if err != nil {
-		log.Fatal(err)
+		return clientURL, err
 	}
 
 	clientURL.Path = path.Join(clientURL.Path, relativeURL.Path)
@@ -160,20 +161,20 @@ func (c *Client) GetEndpointURL(relative string, pathParams PathParams) url.URL 
 	}
 	clientURL.RawQuery = query.Encode()
 
-	// tmpl, err := template.New("endpoint_url").Parse(clientURL.Path)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	tmpl, err := template.New("endpoint_url").Parse(clientURL.Path)
+	if err != nil {
+		return clientURL, err
+	}
 
-	// buf := new(bytes.Buffer)
-	// params := pathParams.Params()
-	// err = tmpl.Execute(buf, params)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// clientURL.Path = buf.String()
+	buf := new(bytes.Buffer)
+	params := pathParams.Params()
+	err = tmpl.Execute(buf, params)
+	if err != nil {
+		log.Fatal(err)
+	}
+	clientURL.Path = buf.String()
 
-	return clientURL
+	return clientURL, nil
 }
 
 func (c *Client) NewRequest(ctx context.Context, method string, URL url.URL, body interface{}) (*http.Request, error) {
@@ -259,7 +260,7 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 		return httpResp, err
 	}
 
-	if len(errorResponse.Messages) > 0 {
+	if len(errorResponse.Message.Errors) > 0 {
 		return httpResp, errorResponse
 	}
 
@@ -369,44 +370,35 @@ type ErrorResponse struct {
 	// HTTP response that caused this error
 	Response *http.Response `json:"-"`
 
-	Messages Messages
+	Message Message
 }
 
 func (r *ErrorResponse) UnmarshalJSON(data []byte) error {
-	msgs := Messages{}
-	err := json.Unmarshal(data, &msgs)
-	if err != nil {
-		return err
-	}
-
-	for _, msg := range msgs {
-		if msg.MessageCode != "" || msg.MessageType != "" || msg.Message != "" {
-			r.Messages = append(r.Messages, msg)
-		}
-	}
-
-	return nil
+	return json.Unmarshal(data, &r.Message)
 }
 
-type Messages []Message
-
-func (msgs Messages) Error() string {
+func (m Message) Error() string {
 	err := []string{}
-	for _, v := range msgs {
-		err = append(err, fmt.Sprintf("%s: %s", v.MessageCode, v.Message))
+	for _, e := range m.Errors {
+		err = append(err, e)
 	}
 
 	return strings.Join(err, ", ")
 }
 
 func (r *ErrorResponse) Error() string {
-	return r.Messages.Error()
+	return r.Message.Error()
 }
 
 type Message struct {
-	MessageCode string `json:"message_code"`
-	MessageType string `json:"message_type"`
-	Message     string `json:"message"`
+	Message        string   `json:"message"`
+	ErrorCode      string   `json:"errorCode"`
+	DeveloperHint  string   `json:"developerHint"`
+	LogID          string   `json:"logId"`
+	HTTPStatusCode int      `json:"httpStatusCode"`
+	Errors         []string `json:"errors"`
+	LogTime        LogTime  `json:"logTime"`
+	SchemaPath     URL      `json:"schemaPath"`
 }
 
 func checkContentType(response *http.Response) error {

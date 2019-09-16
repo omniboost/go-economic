@@ -128,3 +128,44 @@ func (b Bool) MarshalSchema() string {
 	}
 	return "false"
 }
+
+type LogTime struct {
+	time.Time
+}
+
+func (l *LogTime) MarshalJSON() ([]byte, error) {
+	if l.Time.IsZero() {
+		return json.Marshal(nil)
+	}
+
+	return json.Marshal(l.Time)
+}
+
+func (l LogTime) IsEmpty() bool {
+	return l.Time.IsZero()
+}
+
+func (l *LogTime) UnmarshalJSON(text []byte) (err error) {
+	var value string
+	err = json.Unmarshal(text, &value)
+	if err != nil {
+		return err
+	}
+
+	if value == "" {
+		return nil
+	}
+
+	// first try standard date
+	l.Time, err = time.Parse(time.RFC3339, value)
+	if err == nil {
+		return nil
+	}
+
+	l.Time, err = time.Parse("2006-01-02T15:04:05", value)
+	return err
+}
+
+func (l LogTime) MarshalSchema() string {
+	return l.Format("2006-01-02T15:04:05")
+}

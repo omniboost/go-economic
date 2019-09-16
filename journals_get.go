@@ -151,13 +151,18 @@ type JournalsGetResponseBody struct {
 	Self       string     `json:"self"`
 }
 
-func (r *JournalsGetRequest) URL() url.URL {
+func (r *JournalsGetRequest) URL() (url.URL, error) {
 	return r.client.GetEndpointURL("journals-experimental", r.PathParams())
 }
 
 func (r *JournalsGetRequest) Do() (JournalsGetResponseBody, error) {
+	u, err := r.URL()
+	if err != nil {
+		return *r.NewResponseBody(), err
+	}
+
 	// Create http request
-	req, err := r.client.NewRequest(nil, r.Method(), r.URL(), nil)
+	req, err := r.client.NewRequest(nil, r.Method(), u, nil)
 	if err != nil {
 		return *r.NewResponseBody(), err
 	}

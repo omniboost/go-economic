@@ -231,13 +231,18 @@ type CustomersGetResponseBody struct {
 	Self string `json:"self"`
 }
 
-func (r *CustomersGetRequest) URL() url.URL {
+func (r *CustomersGetRequest) URL() (url.URL, error) {
 	return r.client.GetEndpointURL("customers", r.PathParams())
 }
 
 func (r *CustomersGetRequest) Do() (CustomersGetResponseBody, error) {
+	u, err := r.URL()
+	if err != nil {
+		return *r.NewResponseBody(), err
+	}
+
 	// Create http request
-	req, err := r.client.NewRequest(nil, r.Method(), r.URL(), nil)
+	req, err := r.client.NewRequest(nil, r.Method(), u, nil)
 	if err != nil {
 		return *r.NewResponseBody(), err
 	}
