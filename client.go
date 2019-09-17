@@ -168,6 +168,11 @@ func (c *Client) GetEndpointURL(relative string, pathParams PathParams) (url.URL
 
 	buf := new(bytes.Buffer)
 	params := pathParams.Params()
+
+	for k, v := range params {
+		params[k] = QueryEscape(v)
+	}
+
 	err = tmpl.Execute(buf, params)
 	if err != nil {
 		return clientURL, err

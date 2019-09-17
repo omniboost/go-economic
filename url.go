@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strings"
 )
 
 type URL url.URL
@@ -37,4 +38,30 @@ func (u *URL) UnmarshalJSON(data []byte) error {
 
 func (u URL) MarshalJSON() ([]byte, error) {
 	return json.Marshal(u.String())
+}
+
+func QueryEscape(s string) string {
+	mm := map[string]string{
+		"<":  "0",
+		">":  "1",
+		"*":  "2",
+		"%":  "3",
+		":":  "4",
+		"&":  "5",
+		"/":  "6",
+		"\\": "7",
+		"_":  "8",
+		" ":  "9",
+		"?":  "10",
+		".":  "11",
+		"#":  "12",
+		"+":  "13",
+	}
+
+	for k, v := range mm {
+		r := "_" + v + "_"
+		s = strings.Replace(s, k, r, -1)
+	}
+
+	return s
 }

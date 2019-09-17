@@ -28,6 +28,8 @@ func TestInvoicesDraftsPost(t *testing.T) {
 	body.Layout = economic.InvoiceDraftLayout{
 		LayoutNumber: 19,
 	}
+	line := economic.InvoiceDraftLine{}
+	body.Lines = append(body.Lines, line)
 
 	resp, err := req.Do()
 	if err != nil {
