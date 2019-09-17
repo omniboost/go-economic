@@ -106,9 +106,9 @@ func (s *Client) NewJournalsVouchersPostRequestBody() JournalsVouchersPostReques
 }
 
 type JournalsVouchersPostRequestBody struct {
-	AccountingYear struct {
+	AccountingYear *struct {
 		Year string `json:"year"`
-	} `json:"accountingYear"`
+	} `json:"accountingYear,omitempty"`
 	Journal struct {
 		JournalNumber int    `json:"journalNumber"`
 		Self          string `json:"self,omitempty"`
@@ -134,7 +134,7 @@ func (r *JournalsVouchersPostRequest) NewResponseBody() *JournalsVouchersPostRes
 	return &JournalsVouchersPostResponseBody{}
 }
 
-type JournalsVouchersPostResponseBody struct {
+type JournalsVouchersPostResponseBody []struct {
 }
 
 func (r *JournalsVouchersPostRequest) URL() (url.URL, error) {
@@ -268,11 +268,11 @@ type FinanceVoucher struct {
 	} `json:"account"`
 	Amount             float64 `json:"amount"`
 	AmountBaseCurrency float64 `json:"amountBaseCurrency,omitempty"`
-	ContraAccount      struct {
+	ContraAccount      *struct {
 		AccountNumber int    `json:"accountNumber"`
 		Self          string `json:"self,omitempty"`
-	} `json:"contraAccount"`
-	ContactVATAccount struct {
+	} `json:"contraAccount,omitempty"`
+	ContactVATAccount *struct {
 		Self    string `json:"self,omitempty"`
 		VATCode string `json:"VATCode"`
 	} `json:"contraVatAccount,omitempty"`
@@ -289,9 +289,9 @@ type FinanceVoucher struct {
 	Employee struct {
 	} `json:"employee,omitempty"`
 	// Type of the journal entry. This is automatically set to financeVoucher.
-	EntryType    string  `json:"entryType"`
-	ExchangeRate float64 `json:"exchangeRate"`
-	Journal      struct {
+	EntryType    string  `json:"entryType,omitempty"`
+	ExchangeRate float64 `json:"exchangeRate,omitempty"`
+	Journal      *struct {
 		JournalNumber int    `json:"journalNumber"`
 		Self          string `json:"self,omitempty"`
 	} `json:"journal,omitempty"`
