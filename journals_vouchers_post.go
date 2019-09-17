@@ -118,6 +118,7 @@ type JournalsVouchersPostRequestBody struct {
 		SupplierPayments       []SupplierPayment       `json:"supplierPayments,omitempty"`
 		CustomerPayments       []CustomerPayment       `json:"customerPayments,omitempty"`
 		ManualCustomerInvoices []ManualCustomerInvoice `json:"manualCustomerInvoices,omitempty"`
+		FinanceVouchers        []FinanceVoucher        `json:"financeVouchers,omitempty"`
 	} `json:"entries"`
 }
 
@@ -168,7 +169,7 @@ type SupplierInvoice struct {
 		SupplierNumber int    `json:"supplierNumber"`
 		Self           string `json:"self,omitempty"`
 	} `json:"supplier"`
-	Amount  int `json:"amount"`
+	Amount  float64 `json:"amount"`
 	Account struct {
 		AccountNumber int    `json:"accountNumber"`
 		Self          string `json:"self,omitempty"`
@@ -191,9 +192,9 @@ type SupplierPayment struct {
 		SupplierNumber int    `json:"supplierNumber"`
 		Self           string `json:"self,omitempty"`
 	} `json:"supplier"`
-	SupplierInvoiceNumber string `json:"supplierInvoiceNumber"`
-	Text                  string `json:"text"`
-	Amount                int    `json:"amount"`
+	SupplierInvoiceNumber string  `json:"supplierInvoiceNumber"`
+	Text                  string  `json:"text"`
+	Amount                float64 `json:"amount"`
 	Account               struct {
 		AccountNumber int    `json:"accountNumber"`
 		Self          string `json:"self,omitempty"`
@@ -216,8 +217,8 @@ type CustomerPayment struct {
 		CustomerNumber int    `json:"customerNumber"`
 		Self           string `json:"self,omitempty"`
 	} `json:"customer"`
-	Text    string `json:"text"`
-	Amount  int    `json:"amount"`
+	Text    string  `json:"text"`
+	Amount  float64 `json:"amount"`
 	Account struct {
 		AccountNumber int    `json:"accountNumber"`
 		Self          string `json:"self,omitempty"`
@@ -240,9 +241,9 @@ type ManualCustomerInvoice struct {
 		CustomerNumber int    `json:"customerNumber"`
 		Self           string `json:"self,omitempty"`
 	} `json:"customer"`
-	CustomerInvoiceNumber string `json:"customerInvoiceNumber"`
-	Text                  string `json:"text"`
-	Amount                int    `json:"amount"`
+	CustomerInvoiceNumber string  `json:"customerInvoiceNumber"`
+	Text                  string  `json:"text"`
+	Amount                float64 `json:"amount"`
 	Account               struct {
 		AccountNumber int    `json:"accountNumber"`
 		Self          string `json:"self,omitempty"`
@@ -258,4 +259,59 @@ type ManualCustomerInvoice struct {
 	Date string `json:"date"`
 	Type string `json:"type"`
 	Self string `json:"self,omitempty"`
+}
+
+type FinanceVoucher struct {
+	Account struct {
+		AccountNumber int    `json:"accountNumber"`
+		Self          string `json:"self,omitempty"`
+	} `json:"account"`
+	Amount             float64 `json:"amount"`
+	AmountBaseCurrency float64 `json:"amountBaseCurrency,omitempty"`
+	ContraAccount      struct {
+		AccountNumber int    `json:"accountNumber"`
+		Self          string `json:"self,omitempty"`
+	} `json:"contraAccount"`
+	ContactVATAccount struct {
+		Self    string `json:"self,omitempty"`
+		VATCode string `json:"VATCode"`
+	} `json:"contraVatAccount,omitempty"`
+	ContraVatAmount               float64 `json:"contraVatAmount,omitempty"`
+	ContraVatAmountInBaseCurrency float64 `json:"contraVatAmountInBaseCurrency,omitempty"`
+	Currency                      struct {
+		Code string `json:"code"`
+		Self string `json:"self,omitempty"`
+	} `json:"currency"`
+	//  Entry date. Format according to ISO-8601 (YYYY-MM-DD).
+	Date                     string `json:"date"`
+	DepartmentalDistribution struct {
+	} `json:"departmentalDistribution,omitempty"`
+	Employee struct {
+	} `json:"employee,omitempty"`
+	// Type of the journal entry. This is automatically set to financeVoucher.
+	EntryType    string  `json:"entryType"`
+	ExchangeRate float64 `json:"exchangeRate"`
+	Journal      struct {
+		JournalNumber int    `json:"journalNumber"`
+		Self          string `json:"self,omitempty"`
+	} `json:"journal,omitempty"`
+	Project struct {
+	} `json:"project,omitempty"`
+	Quantity1                  float64 `json:"quantity1,omitempty"`
+	Quantity2                  float64 `json:"quantity2,omitempty"`
+	Remainder                  float64 `json:"remainder,omitempty"`
+	RemainderInDefaultCurrency float64 `json:"remainderInDefaultCurrency,omitempty"`
+	Text                       string  `json:"text,omitempty"`
+	Unit1                      struct {
+	} `json:"unit1,omitempty"`
+	Unit2 struct {
+	} `json:"unit2,omitempty"`
+	VATAccount struct {
+		Self    string `json:"self,omitempty"`
+		VATCode string `json:"vatCode"`
+	} `json:"vatAccount"`
+	VATAmount             float64 `json:"vatAmount"`
+	VATAmountBaseCurrency float64 `json:"vatAmountBaseCurrency"`
+	Voucher               struct {
+	} `json:"voucher"`
 }
