@@ -103,6 +103,17 @@ func (r *AccountingYearsGetRequest) NewResponseBody() *AccountingYearsGetRespons
 }
 
 type AccountingYearsGetResponseBody struct {
+	Collection []AccountingYear `json:"collection"`
+	Pagination struct {
+		MaxPageSizeAllowed   int    `json:"maxPageSizeAllowed"`
+		SkipPages            int    `json:"skipPages"`
+		PageSize             int    `json:"pageSize"`
+		Results              int    `json:"results"`
+		ResultsWithoutFilter int    `json:"resultsWithoutFilter"`
+		FirstPage            string `json:"firstPage"`
+		LastPage             string `json:"lastPage"`
+	} `json:"pagination"`
+	Self string `json:"self"`
 }
 
 func (r *AccountingYearsGetRequest) URL() (url.URL, error) {
@@ -130,4 +141,16 @@ func (r *AccountingYearsGetRequest) Do() (AccountingYearsGetResponseBody, error)
 	responseBody := r.NewResponseBody()
 	_, err = r.client.Do(req, responseBody)
 	return *responseBody, err
+}
+
+type AccountingYear struct {
+	FromDate Date   `json:"fromDate"`
+	ToDate   Date   `json:"toDate"`
+	Closed   bool   `json:"closed,omitempty"`
+	Year     string `json:"year"`
+	Periods  string `json:"periods"`
+	Entries  string `json:"entries"`
+	Totals   string `json:"totals"`
+	Vouchers string `json:"vouchers"`
+	Self     string `json:"self"`
 }
