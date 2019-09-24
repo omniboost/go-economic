@@ -9,9 +9,9 @@ import (
 func TestJournalsVouchersByNumberGet(t *testing.T) {
 	client := client()
 	req := client.NewJournalsVouchersByNumberGetRequest()
-	req.PathParams().JournalNumber = 965
-	req.PathParams().AccountingYear = 2019
-	req.PathParams().VoucherNumber = 6731
+	req.PathParams().JournalNumber = 10
+	req.PathParams().AccountingYear = "2018/2019"
+	req.PathParams().VoucherNumber = 1
 
 	resp, err := req.Do()
 	if err != nil {

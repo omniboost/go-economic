@@ -67,7 +67,7 @@ func (c *Client) NewJournalsVouchersByNumberGetPathParams() *JournalsVouchersByN
 
 type JournalsVouchersByNumberGetPathParams struct {
 	JournalNumber  int
-	AccountingYear int
+	AccountingYear string
 	VoucherNumber  int
 }
 
@@ -111,6 +111,111 @@ func (r *JournalsVouchersByNumberGetRequest) NewResponseBody() *JournalsVouchers
 }
 
 type JournalsVouchersByNumberGetResponseBody struct {
+	AccountingYear struct {
+		Year string `json:"year"`
+		Self string `json:"self"`
+	} `json:"accountingYear"`
+	Journal struct {
+		JournalNumber int    `json:"journalNumber"`
+		Self          string `json:"self"`
+	} `json:"journal"`
+	Entries struct {
+		FinanceVouchers []struct {
+			Account struct {
+				AccountNumber int    `json:"accountNumber"`
+				Self          string `json:"self"`
+			} `json:"account"`
+			VatAccount struct {
+				VatCode string `json:"vatCode"`
+				Self    string `json:"self"`
+			} `json:"vatAccount,omitempty"`
+			VatAmount             float64 `json:"vatAmount"`
+			VatAmountBaseCurrency float64 `json:"vatAmountBaseCurrency"`
+			Text                  string  `json:"text"`
+			Journal               struct {
+				JournalNumber int    `json:"journalNumber"`
+				Self          string `json:"self"`
+			} `json:"journal"`
+			Amount   float64 `json:"amount"`
+			Currency struct {
+				Code string `json:"code"`
+				Self string `json:"self"`
+			} `json:"currency"`
+			Date         string  `json:"date"`
+			ExchangeRate float64 `json:"exchangeRate"`
+			EntryType    string  `json:"entryType"`
+			Voucher      struct {
+				AccountingYear struct {
+					Year string `json:"year"`
+					Self string `json:"self"`
+				} `json:"accountingYear"`
+				VoucherNumber int    `json:"voucherNumber"`
+				Attachment    string `json:"attachment"`
+				Self          string `json:"self"`
+			} `json:"voucher"`
+			AmountDefaultCurrency    float64 `json:"amountDefaultCurrency"`
+			Remainder                float64 `json:"remainder"`
+			RemainderDefaultCurrency float64 `json:"remainderDefaultCurrency"`
+			JournalEntryNumber       int     `json:"journalEntryNumber"`
+			MetaData                 struct {
+				Delete struct {
+					Description string `json:"description"`
+					Href        string `json:"href"`
+					HTTPMethod  string `json:"httpMethod"`
+				} `json:"delete"`
+			} `json:"metaData"`
+			Self string `json:"self"`
+		} `json:"financeVouchers"`
+		ManualCustomerInvoices []struct {
+			Customer struct {
+				CustomerNumber int    `json:"customerNumber"`
+				Self           string `json:"self"`
+			} `json:"customer"`
+			CustomerInvoice int    `json:"customerInvoice"`
+			DueDate         string `json:"dueDate"`
+			Templates       struct {
+				CustomerPayment string `json:"customerPayment"`
+				Self            string `json:"self"`
+			} `json:"templates"`
+			Text    string `json:"text"`
+			Journal struct {
+				JournalNumber int    `json:"journalNumber"`
+				Self          string `json:"self"`
+			} `json:"journal"`
+			Amount   float64 `json:"amount"`
+			Currency struct {
+				Code string `json:"code"`
+				Self string `json:"self"`
+			} `json:"currency"`
+			Date         string  `json:"date"`
+			ExchangeRate float64 `json:"exchangeRate"`
+			EntryType    string  `json:"entryType"`
+			Voucher      struct {
+				AccountingYear struct {
+					Year string `json:"year"`
+					Self string `json:"self"`
+				} `json:"accountingYear"`
+				VoucherNumber int    `json:"voucherNumber"`
+				Attachment    string `json:"attachment"`
+				Self          string `json:"self"`
+			} `json:"voucher"`
+			AmountDefaultCurrency    float64 `json:"amountDefaultCurrency"`
+			Remainder                float64 `json:"remainder"`
+			RemainderDefaultCurrency float64 `json:"remainderDefaultCurrency"`
+			JournalEntryNumber       int     `json:"journalEntryNumber"`
+			MetaData                 struct {
+				Delete struct {
+					Description string `json:"description"`
+					Href        string `json:"href"`
+					HTTPMethod  string `json:"httpMethod"`
+				} `json:"delete"`
+			} `json:"metaData"`
+			Self string `json:"self"`
+		} `json:"manualCustomerInvoices"`
+	} `json:"entries"`
+	VoucherNumber int    `json:"voucherNumber"`
+	Attachment    string `json:"attachment"`
+	Self          string `json:"self"`
 }
 
 func (r *JournalsVouchersByNumberGetRequest) URL() (url.URL, error) {
