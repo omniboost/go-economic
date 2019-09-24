@@ -99,6 +99,7 @@ func newSchemaEncoder() *schema.Encoder {
 	// encoder.RegisterEncoder(Date{}, encodeDate)
 	encoder.RegisterEncoder(Bool(false), encodeSchemaMarshaler)
 	encoder.RegisterEncoder(DateTime{}, encodeSchemaMarshaler)
+	encoder.RegisterEncoder(Filter{}, encodeSchemaMarshaler)
 	// encoder.RegisterEncoder(null.Float{}, encodeNullFloat)
 	// encoder.RegisterEncoder(null.Bool{}, encodeNullBool)
 	// encoder.RegisterEncoder(DateTime{}, encodeDateTime)

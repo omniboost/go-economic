@@ -35,7 +35,7 @@ type CustomersGetQueryParams struct {
 	SkipPages int `schema:"skippages,omitempty"`
 	PageSize  int `schema:"pagesize,omitempty"`
 	// https://restdocs.e-conomic.com/#filtering
-	Filter string `schema:"filter,omitempty"`
+	Filter Filter `schema:"filter,omitempty"`
 	// https://restdocs.e-conomic.com/#sorting
 	Sort string `schema:"sort,omitempty"`
 }

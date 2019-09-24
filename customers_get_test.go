@@ -2,6 +2,7 @@ package economic_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"testing"
 
@@ -11,6 +12,8 @@ import (
 func TestCustomersGet(t *testing.T) {
 	client := client()
 	req := client.NewCustomersGetRequest()
+	filter := fmt.Sprintf("name$eq:%s$or:name$eq:%s", "Bravo Tours", "leon@omniboost.io")
+	req.QueryParams().Filter.Set(filter)
 
 	resp, err := req.Do()
 	if err != nil {

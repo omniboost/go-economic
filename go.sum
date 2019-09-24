@@ -2,7 +2,13 @@ github.com/a-h/generate v0.0.0-20190312091541-e59c34d33fb3 h1:Ddgcglj3p+q6QqZ5n4
 github.com/a-h/generate v0.0.0-20190312091541-e59c34d33fb3/go.mod h1:traiLYQ0YD7qUMCdjo6/jSaJRPHXniX4HVs+PhEhYpc=
 github.com/cydev/zero v0.0.0-20160322155811-4a4535dd56e7 h1:OQoU2eJO+adwX0gBaIede9S+aL6aQU/0aKwktWKyl8s=
 github.com/cydev/zero v0.0.0-20160322155811-4a4535dd56e7/go.mod h1:XGbwUcTsr1d7ezSp77rqp7aaYHlX+01wCaIFUNMRY6g=
+github.com/gorilla/schema v0.0.0-20171211162101-9fa3b6af65dc h1:ZTcKDaJOhVhscc4XgpGKLRJJXD2bk879TBpXWzHDE5A=
+github.com/gorilla/schema v0.0.0-20171211162101-9fa3b6af65dc/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
 github.com/gorilla/schema v1.1.0 h1:CamqUDOFUBqzrvxuz2vEwo8+SUdwsluFh7IlzJh30LY=
 github.com/gorilla/schema v1.1.0/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
+github.com/gorilla/schema v1.1.1-0.20190723040319-6f159e384b9b h1:raLmHVpyK+gq1MIVsPQTysht/GbWSE3SNyh3p1XCXfw=
+github.com/gorilla/schema v1.1.1-0.20190723040319-6f159e384b9b/go.mod h1:kgLaKoK1FELgZqMAVxx/5cbj0kT+57qxUrAlIO2eleU=
 github.com/joho/godotenv v1.3.0 h1:Zjp+RcGpHhGlrMbJzXTrZZPrWj+1vfm90La1wgB6Bhc=
 github.com/joho/godotenv v1.3.0/go.mod h1:7hK45KPybAkOC6peb+G5yklZfMxEjkZhHbwpqxOKXbg=
+github.com/omniboost/schema v1.1.1-0.20190924111216-95db46434efb h1:fbDHMBVhOMfr9DkAJeoS3J7Z6eeyF4+lzX7w2EKPP7E=
+github.com/omniboost/schema v1.1.1-0.20190924111216-95db46434efb/go.mod h1:9fjiXyATsFBndd1ZtrF4KJOs/VwBFmhX4N9yblkz+Jg=
