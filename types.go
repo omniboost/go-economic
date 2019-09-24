@@ -1,5 +1,7 @@
 package economic
 
+import "github.com/cydev/zero"
+
 type Pagination struct {
 	MaxPageSizeAllowed   int    `json:"maxPageSizeAllowed"`
 	SkipPages            int    `json:"skipPages"`
@@ -30,4 +32,24 @@ func (f Filter) MarshalSchema() string {
 
 func (f Filter) IsZero() bool {
 	return f.raw == ""
+}
+
+type Account struct {
+	AccountNumber int    `json:"accountNumber"`
+	Self          string `json:"self,omitempty"`
+}
+
+func (a Account) IsEmpty() bool {
+	return zero.IsZero(a)
+}
+
+type Voucher struct {
+	// Journal voucher number must be between 1-999999999.
+	VoucherNumber int `json:"voucherNumber"`
+	//  A unique link reference to the voucher item.
+	Self string `json:"self,omitempty"`
+}
+
+func (v Voucher) IsEmpty() bool {
+	return zero.IsZero(v)
 }

@@ -121,10 +121,7 @@ type JournalsVouchersByNumberGetResponseBody struct {
 	} `json:"journal"`
 	Entries struct {
 		FinanceVouchers []struct {
-			Account struct {
-				AccountNumber int    `json:"accountNumber"`
-				Self          string `json:"self"`
-			} `json:"account"`
+			Account    Account `json:"account"`
 			VatAccount struct {
 				VatCode string `json:"vatCode"`
 				Self    string `json:"self"`

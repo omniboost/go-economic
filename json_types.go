@@ -40,6 +40,10 @@ func (d *Date) UnmarshalJSON(data []byte) (err error) {
 	return err
 }
 
+func (d Date) IsEmpty() bool {
+	return d.Time.IsZero()
+}
+
 type DateTime struct {
 	time.Time
 }

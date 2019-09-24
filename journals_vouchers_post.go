@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"github.com/omniboost/go-economic/omitempty"
 )
 
 func (c *Client) NewJournalsVouchersPostRequest() JournalsVouchersPostRequest {
@@ -241,41 +243,36 @@ type ManualCustomerInvoice struct {
 		CustomerNumber int    `json:"customerNumber"`
 		Self           string `json:"self,omitempty"`
 	} `json:"customer"`
-	CustomerInvoiceNumber string  `json:"customerInvoiceNumber"`
+	CustomerInvoiceNumber int     `json:"customerInvoiceNumber"`
 	Text                  string  `json:"text"`
 	Amount                float64 `json:"amount"`
-	Account               struct {
-		AccountNumber int    `json:"accountNumber"`
-		Self          string `json:"self,omitempty"`
-	} `json:"account"`
-	ContraAccount struct {
-		AccountNumber int    `json:"accountNumber"`
-		Self          string `json:"self,omitempty"`
-	} `json:"contraAccount"`
-	Currency struct {
+	Account               Account `json:"account,omitempty"`
+	// The account used for the funds. Either ‘customer’ or ‘contraAccount’ is
+	// required.
+	ContraAccount Account `json:"contactAccount,omitempty"`
+	Currency      struct {
 		Code string `json:"code"`
 		Self string `json:"self,omitempty"`
 	} `json:"currency"`
 	Date string `json:"date"`
 	Type string `json:"type"`
 	Self string `json:"self,omitempty"`
+	// Voucher that the entry belongs to.
+	Voucher Voucher `json:"voucher,omitempty"`
+	// The date the entry is due for payment. Format according to ISO-8601 (YYYY-MM-DD).
+	DueDate Date `json:"dueDate,omitempty"`
+}
+
+func (i ManualCustomerInvoice) MarshalJSON() ([]byte, error) {
+	return omitempty.MarshalJSON(i)
 }
 
 type FinanceVoucher struct {
-	Account struct {
-		AccountNumber int    `json:"accountNumber"`
-		Self          string `json:"self,omitempty"`
-	} `json:"account"`
-	Amount             float64 `json:"amount"`
-	AmountBaseCurrency float64 `json:"amountBaseCurrency,omitempty"`
-	ContraAccount      *struct {
-		AccountNumber int    `json:"accountNumber"`
-		Self          string `json:"self,omitempty"`
-	} `json:"contraAccount,omitempty"`
-	ContactVATAccount *struct {
-		Self    string `json:"self,omitempty"`
-		VATCode string `json:"VATCode"`
-	} `json:"contraVatAccount,omitempty"`
+	Account                       Account `json:"account,omitempty"`
+	Amount                        float64 `json:"amount"`
+	AmountBaseCurrency            float64 `json:"amountBaseCurrency,omitempty"`
+	ContraAccount                 Account `json:"contraAccount,omitempty"`
+	ContactVATAccount             Account `json:"contraVatAccount,omitempty"`
 	ContraVatAmount               float64 `json:"contraVatAmount,omitempty"`
 	ContraVatAmountInBaseCurrency float64 `json:"contraVatAmountInBaseCurrency,omitempty"`
 	Currency                      struct {
@@ -311,7 +308,10 @@ type FinanceVoucher struct {
 		VATCode string `json:"vatCode"`
 	} `json:"vatAccount"`
 	VATAmount             float64 `json:"vatAmount"`
-	VATAmountBaseCurrency float64 `json:"vatAmountBaseCurrency"`
-	Voucher               struct {
-	} `json:"voucher"`
+	VATAmountBaseCurrency float64 `json:"vatAmountBaseCurrency,omitempty"`
+	Voucher               Voucher `json:"voucher,omitempty"`
+}
+
+func (f FinanceVoucher) MarshalJSON() ([]byte, error) {
+	return omitempty.MarshalJSON(f)
 }
