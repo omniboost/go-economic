@@ -382,28 +382,70 @@ func (r *ErrorResponse) UnmarshalJSON(data []byte) error {
 	return json.Unmarshal(data, &r.Message)
 }
 
-func (m Message) Error() string {
-	err := []string{}
-	for _, e := range m.Errors {
-		err = append(err, e)
-	}
-
-	return strings.Join(err, ", ")
-}
-
 func (r *ErrorResponse) Error() string {
 	return r.Message.Error()
 }
 
 type Message struct {
-	Message        string   `json:"message"`
-	ErrorCode      string   `json:"errorCode"`
-	DeveloperHint  string   `json:"developerHint"`
-	LogID          string   `json:"logId"`
-	HTTPStatusCode int      `json:"httpStatusCode"`
-	Errors         []string `json:"errors"`
-	LogTime        LogTime  `json:"logTime"`
-	SchemaPath     URL      `json:"schemaPath"`
+	Message        string  `json:"message"`
+	ErrorCode      string  `json:"errorCode"`
+	DeveloperHint  string  `json:"developerHint"`
+	LogID          string  `json:"logId"`
+	HTTPStatusCode int     `json:"httpStatusCode"`
+	Errors         []Error `json:"errors"`
+	LogTime        LogTime `json:"logTime"`
+	SchemaPath     URL     `json:"schemaPath"`
+}
+
+func (m Message) Error() string {
+	err := []string{}
+	for _, e := range m.Errors {
+		err = append(err, e.Error())
+	}
+
+	return strings.Join(err, ", ")
+}
+
+type Error struct {
+	PropertyName  string      `json:"propertyName"`
+	ErrorMessage  string      `json:"errorMessage"`
+	ErrorCode     string      `json:"errorCode"`
+	InputValue    interface{} `json:"inputValue"`
+	DeveloperHint string      `json:"developerHint"`
+}
+
+func (e *Error) UnmarshalJSON(data []byte) error {
+	var str string
+	err := json.Unmarshal(data, &str)
+	if err == nil {
+		e.ErrorMessage = str
+		log.Println("1")
+		return nil
+	}
+
+	type alias Error
+	a := alias(*e)
+	err = json.Unmarshal(data, &a)
+	if err != nil {
+		log.Println("2")
+		return err
+	}
+
+	*e = Error(a)
+	log.Println("3")
+	return nil
+}
+
+func (r Error) Error() string {
+	if r.ErrorCode == "" && r.ErrorMessage != "" {
+		return r.ErrorMessage
+	}
+
+	b, err := json.MarshalIndent(r, "", "  ")
+	if err != nil {
+		log.Fatal(err)
+	}
+	return string(b)
 }
 
 func checkContentType(response *http.Response) error {

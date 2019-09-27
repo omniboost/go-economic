@@ -243,10 +243,10 @@ type ManualCustomerInvoice struct {
 		CustomerNumber int    `json:"customerNumber"`
 		Self           string `json:"self,omitempty"`
 	} `json:"customer"`
-	CustomerInvoiceNumber int     `json:"customerInvoiceNumber"`
-	Text                  string  `json:"text"`
-	Amount                float64 `json:"amount"`
-	Account               Account `json:"account,omitempty"`
+	CustomerInvoice int     `json:"customerInvoice"`
+	Text            string  `json:"text"`
+	Amount          float64 `json:"amount"`
+	Account         Account `json:"account,omitempty"`
 	// The account used for the funds. Either ‘customer’ or ‘contraAccount’ is
 	// required.
 	ContraAccount Account `json:"contactAccount,omitempty"`
