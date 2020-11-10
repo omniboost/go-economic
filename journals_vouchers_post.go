@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/cydev/zero"
 	"github.com/omniboost/go-economic/omitempty"
 )
 
@@ -280,10 +281,9 @@ type FinanceVoucher struct {
 		Self string `json:"self,omitempty"`
 	} `json:"currency"`
 	//  Entry date. Format according to ISO-8601 (YYYY-MM-DD).
-	Date                     string `json:"date"`
-	DepartmentalDistribution struct {
-	} `json:"departmentalDistribution,omitempty"`
-	Employee struct {
+	Date                     string                   `json:"date"`
+	DepartmentalDistribution DepartmentalDistribution `json:"departmentalDistribution,omitempty"`
+	Employee                 struct {
 	} `json:"employee,omitempty"`
 	// Type of the journal entry. This is automatically set to financeVoucher.
 	EntryType    string  `json:"entryType,omitempty"`
@@ -314,4 +314,11 @@ type FinanceVoucher struct {
 
 func (f FinanceVoucher) MarshalJSON() ([]byte, error) {
 	return omitempty.MarshalJSON(f)
+}
+
+type DepartmentalDistribution struct {
+}
+
+func (d DepartmentalDistribution) IsEmpty() bool {
+	return zero.IsZero(d)
 }
