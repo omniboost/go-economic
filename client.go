@@ -260,12 +260,18 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 	}
 
 	errorResponse := &ErrorResponse{Response: httpResp}
-	err = c.Unmarshal(httpResp.Body, &responseBody, &errorResponse)
+	message := &Message{}
+	err = c.Unmarshal(httpResp.Body, &responseBody, &errorResponse, &message)
 	if err != nil {
 		return httpResp, err
 	}
 
 	if len(errorResponse.Message.Errors) > 0 {
+		return httpResp, errorResponse
+	}
+
+	if message.Error() != "" {
+		errorResponse.Message = *message
 		return httpResp, errorResponse
 	}
 
@@ -368,7 +374,11 @@ func CheckResponse(r *http.Response) error {
 		return err
 	}
 
-	return errorResponse
+	if len(errorResponse.Message.Errors) > 0 {
+		return errorResponse
+	}
+
+	return nil
 }
 
 type ErrorResponse struct {
@@ -399,6 +409,14 @@ type Message struct {
 
 func (m Message) Error() string {
 	err := []string{}
+	if m.Message != "" {
+		err = append(err, m.Message)
+	}
+
+	if m.DeveloperHint != "" {
+		err = append(err, m.DeveloperHint)
+	}
+
 	for _, e := range m.Errors {
 		err = append(err, e.Error())
 	}
