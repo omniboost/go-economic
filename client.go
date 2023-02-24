@@ -396,15 +396,82 @@ func (r *ErrorResponse) Error() string {
 	return r.Message.Error()
 }
 
+// {
+//   "message": "Validation failed. 2 errors found.",
+//   "errorCode": "E04300",
+//   "developerHint": "Inspect validation errors and correct your request.",
+//   "logId": "5ab645d7a7708766-DUS",
+//   "httpStatusCode": 400,
+//   "errors": [
+//     {
+//       "arrayIndex": 0,
+//       "account": {
+//         "errors": [
+//           {
+//             "propertyName": "account",
+//             "errorMessage": "Account(s) is not found or barred.",
+//             "errorCode": "E04041",
+//             "inputValue": "9999",
+//             "developerHint": "You must provide an accessible account."
+//           }
+//         ]
+//       },
+//       "entries": {
+//         "items": [
+//           {
+//             "arrayIndex": 10,
+//             "Account": {
+//               "errors": [
+//                 {
+//                   "propertyName": "Account",
+//                   "errorMessage": "Account '9999' not found.",
+//                   "errorCode": "E07150",
+//                   "inputValue": 9999,
+//                   "developerHint": "Find a list of accounts at https://restapi.e-conomic.com/accounts ."
+//                 }
+//               ]
+//             }
+//           }
+//         ]
+//       }
+//     }
+//   ],
+//   "logTime": "2020-06-30T09:46:19",
+//   "errorCount": 2
+// }
+
 type Message struct {
-	Message        string  `json:"message"`
-	ErrorCode      string  `json:"errorCode"`
-	DeveloperHint  string  `json:"developerHint"`
-	LogID          string  `json:"logId"`
-	HTTPStatusCode int     `json:"httpStatusCode"`
-	Errors         []Error `json:"errors"`
-	LogTime        LogTime `json:"logTime"`
-	SchemaPath     URL     `json:"schemaPath"`
+	Message        string          `json:"message"`
+	ErrorCode      string          `json:"errorCode"`
+	DeveloperHint  string          `json:"developerHint"`
+	LogID          string          `json:"logId"`
+	HTTPStatusCode int             `json:"httpStatusCode"`
+	Errors         ErrorCollection `json:"errors"`
+	LogTime        LogTime         `json:"logTime"`
+	SchemaPath     URL             `json:"schemaPath"`
+}
+
+type ErrorCollection []struct {
+	ArrayIndex int `json:"arrayIndex"`
+	Account    struct {
+		Errors []Error `json:"errors"`
+	} `json:"account"`
+	Entries struct {
+		Items ErrorCollection `json:"items"`
+	} `json:"entries"`
+}
+
+func (cc ErrorCollection) Error() string {
+	err := []string{}
+
+	for _, c := range cc {
+		for _, e := range c.Account.Errors {
+			err = append(err, e.Error())
+		}
+		err = append(err, c.Entries.Items.Error())
+	}
+
+	return strings.Join(err, ", ")
 }
 
 func (m Message) Error() string {
@@ -417,8 +484,8 @@ func (m Message) Error() string {
 		err = append(err, m.DeveloperHint)
 	}
 
-	for _, e := range m.Errors {
-		err = append(err, e.Error())
+	if m.Errors.Error() != "" {
+		err = append(err, m.Errors.Error())
 	}
 
 	return strings.Join(err, ", ")
