@@ -261,7 +261,8 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 
 	errorResponse := &ErrorResponse{Response: httpResp}
 	message := &Message{}
-	err = c.Unmarshal(httpResp.Body, &responseBody, &errorResponse, &message)
+	message2 := Message2{}
+	err = c.Unmarshal(httpResp.Body, &responseBody, &errorResponse, &message, &message2)
 	if err != nil {
 		return httpResp, err
 	}
@@ -270,9 +271,12 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 		return httpResp, errorResponse
 	}
 
+	if message2.Error() != "" {
+		return httpResp, message2
+	}
+
 	if message.Error() != "" {
-		errorResponse.Message = *message
-		return httpResp, errorResponse
+		return httpResp, message
 	}
 
 	return httpResp, nil
@@ -451,6 +455,43 @@ type Message struct {
 	SchemaPath     URL             `json:"schemaPath"`
 }
 
+//	{
+//	    "developerHint": "Inspect validation errors and correct your request.",
+//	    "errorCode": "E04300",
+//	    "errorCount": 1,
+//	    "errors": {
+//	        "customerGroup": {
+//	            "errors": [
+//	                {
+//	                    "developerHint": "Find a list of customer groups at https://restapi.e-conomic.com/customer-groups .",
+//	                    "errorCode": "E07140",
+//	                    "errorMessage": "CustomerGroup '1' not found.",
+//	                    "inputValue": 1,
+//	                    "propertyName": "customerGroup"
+//	                }
+//	            ]
+//	        }
+//	    },
+//	    "httpStatusCode": 400,
+//	    "logId": "7dacf1e1192c3689-FRA",
+//	    "logTime": "2023-06-21T16:29:38",
+//	    "message": "Validation failed. 1 error found."
+//	}
+type Message2 struct {
+	Message        string `json:"message"`
+	ErrorCode      string `json:"errorCode"`
+	DeveloperHint  string `json:"developerHint"`
+	LogID          string `json:"logId"`
+	HTTPStatusCode int    `json:"httpStatusCode"`
+	Errors         struct {
+		CustomerGroup struct {
+			Errors []Error `json:"errors"`
+		} `json:"customerGroup"`
+	} `json:"errors"`
+	LogTime    LogTime `json:"logTime"`
+	SchemaPath URL     `json:"schemaPath"`
+}
+
 type ErrorCollection []struct {
 	ArrayIndex int `json:"arrayIndex"`
 	Account    struct {
@@ -486,6 +527,25 @@ func (m Message) Error() string {
 
 	if m.Errors.Error() != "" {
 		err = append(err, m.Errors.Error())
+	}
+
+	return strings.Join(err, ", ")
+}
+
+func (m Message2) Error() string {
+	err := []string{}
+	if m.Message != "" {
+		err = append(err, m.Message)
+	}
+
+	if m.DeveloperHint != "" {
+		err = append(err, m.DeveloperHint)
+	}
+
+	for _, e := range m.Errors.CustomerGroup.Errors {
+		if e.Error() != "" {
+			err = append(err, e.Error())
+		}
 	}
 
 	return strings.Join(err, ", ")
