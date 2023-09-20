@@ -500,6 +500,9 @@ type ErrorCollection []struct {
 	Entries struct {
 		Items ErrorCollection `json:"items"`
 	} `json:"entries"`
+	Type struct {
+		Errors []Error `json:"errors"`
+	} `json:"type"`
 }
 
 func (cc ErrorCollection) Error() string {
@@ -509,7 +512,15 @@ func (cc ErrorCollection) Error() string {
 		for _, e := range c.Account.Errors {
 			err = append(err, e.Error())
 		}
-		err = append(err, c.Entries.Items.Error())
+		if e := c.Entries.Items.Error(); e != "" {
+			err = append(err, c.Entries.Items.Error())
+		}
+	}
+
+	for _, c := range cc {
+		for _, e := range c.Type.Errors {
+			err = append(err, e.Error())
+		}
 	}
 
 	return strings.Join(err, ", ")
