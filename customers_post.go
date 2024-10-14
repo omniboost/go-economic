@@ -123,8 +123,7 @@ func (r *CustomersPostRequest) NewResponseBody() *CustomersPostResponseBody {
 	return &CustomersPostResponseBody{}
 }
 
-type CustomersPostResponseBody []struct {
-}
+type CustomersPostResponseBody Customer
 
 func (r *CustomersPostRequest) URL() (url.URL, error) {
 	return r.client.GetEndpointURL("customers", r.PathParams())
