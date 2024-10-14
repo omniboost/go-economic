@@ -14,7 +14,6 @@ import (
 	"net/url"
 	"path"
 	"strings"
-	"sync"
 	"text/template"
 )
 
@@ -261,14 +260,15 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 
 	errorResponse := &ErrorResponse{Response: httpResp}
 	message := &Message{}
-	message2 := Message2{}
-	err = c.Unmarshal(httpResp.Body, &responseBody, &errorResponse, &message, &message2)
+	message2 := &Message2{}
+	message3 := &Message3{}
+	err = c.Unmarshal(httpResp.Body, []interface{}{}, []interface{}{responseBody, errorResponse, message, message2, message3})
 	if err != nil {
 		return httpResp, err
 	}
 
-	if len(errorResponse.Message.Errors) > 0 {
-		return httpResp, errorResponse
+	if message3.Error() != "" {
+		return httpResp, message3
 	}
 
 	if message2.Error() != "" {
@@ -279,62 +279,40 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 		return httpResp, message
 	}
 
+	if len(errorResponse.Message.Errors) > 0 {
+		return httpResp, errorResponse
+	}
+
 	return httpResp, nil
 }
 
-func (c *Client) Unmarshal(r io.Reader, vv ...interface{}) error {
-	if len(vv) == 0 {
+func (c *Client) Unmarshal(r io.Reader, vv []interface{}, optionalVv []interface{}) error {
+	if len(vv) == 0 && len(optionalVv) == 0 {
 		return nil
 	}
 
-	wg := sync.WaitGroup{}
-	wg.Add(len(vv))
-	errs := []error{}
-	writers := make([]io.Writer, len(vv))
-
-	for i, v := range vv {
-		pr, pw := io.Pipe()
-		writers[i] = pw
-
-		go func(i int, v interface{}, pr *io.PipeReader, pw *io.PipeWriter) {
-			dec := json.NewDecoder(pr)
-			if c.disallowUnknownFields {
-				dec.DisallowUnknownFields()
-			}
-
-			err := dec.Decode(v)
-			if err != nil {
-				errs = append(errs, err)
-			}
-
-			// mark routine as done
-			wg.Done()
-
-			// Drain reader
-			io.Copy(ioutil.Discard, pr)
-
-			// close reader
-			// pr.CloseWithError(err)
-			pr.Close()
-		}(i, v, pr, pw)
-	}
-
-	// copy the data in a multiwriter
-	mw := io.MultiWriter(writers...)
-	_, err := io.Copy(mw, r)
+	b, err := io.ReadAll(r)
 	if err != nil {
 		return err
 	}
 
-	wg.Wait()
-	if len(errs) == len(vv) {
-		// Everything errored
-		msgs := make([]string, len(errs))
-		for i, e := range errs {
-			msgs[i] = fmt.Sprint(e)
+	for _, v := range vv {
+		r := bytes.NewReader(b)
+		dec := json.NewDecoder(r)
+
+		err := dec.Decode(v)
+		if err != nil && err != io.EOF {
+			return err
 		}
-		return errors.New(strings.Join(msgs, ", "))
 	}
+
+	for _, v := range optionalVv {
+		r := bytes.NewReader(b)
+		dec := json.NewDecoder(r)
+
+		_ = dec.Decode(v)
+	}
+
 	return nil
 }
 
@@ -492,6 +470,17 @@ type Message2 struct {
 	SchemaPath URL     `json:"schemaPath"`
 }
 
+type Message3 struct {
+	Message        string   `json:"message"`
+	ErrorCode      string   `json:"errorCode"`
+	DeveloperHint  string   `json:"developerHint"`
+	LogID          string   `json:"logId"`
+	HTTPStatusCode int      `json:"httpStatusCode"`
+	Errors         []string `json:"errors"`
+	LogTime        LogTime  `json:"logTime"`
+	SchemaPath     URL      `json:"schemaPath"`
+}
+
 type ErrorCollection []struct {
 	ArrayIndex int `json:"arrayIndex"`
 	Account    struct {
@@ -556,6 +545,25 @@ func (m Message2) Error() string {
 	for _, e := range m.Errors.CustomerGroup.Errors {
 		if e.Error() != "" {
 			err = append(err, e.Error())
+		}
+	}
+
+	return strings.Join(err, ", ")
+}
+
+func (m Message3) Error() string {
+	err := []string{}
+	if m.Message != "" {
+		err = append(err, m.Message)
+	}
+
+	if m.DeveloperHint != "" {
+		err = append(err, m.DeveloperHint)
+	}
+
+	for _, e := range m.Errors {
+		if e != "" {
+			err = append(err, e)
 		}
 	}
 
