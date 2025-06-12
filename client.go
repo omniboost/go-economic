@@ -267,16 +267,16 @@ func (c *Client) Do(req *http.Request, responseBody interface{}) (*http.Response
 		return httpResp, err
 	}
 
-	if message3.Error() != "" {
-		return httpResp, message3
+	if message.Error() != "" {
+		return httpResp, message
 	}
 
 	if message2.Error() != "" {
 		return httpResp, message2
 	}
 
-	if message.Error() != "" {
-		return httpResp, message
+	if message3.Error() != "" {
+		return httpResp, message3
 	}
 
 	if len(errorResponse.Message.Errors) > 0 {
@@ -433,6 +433,27 @@ type Message struct {
 	SchemaPath     URL             `json:"schemaPath"`
 }
 
+func (m Message) Error() string {
+	if len(m.Errors) == 0 {
+		return ""
+	}
+
+	err := []string{}
+	if m.Message != "" {
+		err = append(err, m.Message)
+	}
+
+	if m.DeveloperHint != "" {
+		err = append(err, m.DeveloperHint)
+	}
+
+	if m.Errors.Error() != "" {
+		err = append(err, m.Errors.Error())
+	}
+
+	return strings.Join(err, ", ")
+}
+
 //	{
 //	    "developerHint": "Inspect validation errors and correct your request.",
 //	    "errorCode": "E04300",
@@ -470,6 +491,25 @@ type Message2 struct {
 	SchemaPath URL     `json:"schemaPath"`
 }
 
+func (m Message2) Error() string {
+	err := []string{}
+	if m.Message != "" {
+		err = append(err, m.Message)
+	}
+
+	if m.DeveloperHint != "" {
+		err = append(err, m.DeveloperHint)
+	}
+
+	for _, e := range m.Errors.CustomerGroup.Errors {
+		if e.Error() != "" {
+			err = append(err, e.Error())
+		}
+	}
+
+	return strings.Join(err, ", ")
+}
+
 type Message3 struct {
 	Message        string   `json:"message"`
 	ErrorCode      string   `json:"errorCode"`
@@ -479,6 +519,29 @@ type Message3 struct {
 	Errors         []string `json:"errors"`
 	LogTime        LogTime  `json:"logTime"`
 	SchemaPath     URL      `json:"schemaPath"`
+}
+
+func (m Message3) Error() string {
+	if len(m.Errors) == 0 {
+		return ""
+	}
+
+	err := []string{}
+	if m.Message != "" {
+		err = append(err, m.Message)
+	}
+
+	if m.DeveloperHint != "" {
+		err = append(err, m.DeveloperHint)
+	}
+
+	for _, e := range m.Errors {
+		if e != "" {
+			err = append(err, e)
+		}
+	}
+
+	return strings.Join(err, ", ")
 }
 
 type ErrorCollection []struct {
@@ -515,61 +578,6 @@ func (cc ErrorCollection) Error() string {
 	return strings.Join(err, ", ")
 }
 
-func (m Message) Error() string {
-	err := []string{}
-	if m.Message != "" {
-		err = append(err, m.Message)
-	}
-
-	if m.DeveloperHint != "" {
-		err = append(err, m.DeveloperHint)
-	}
-
-	if m.Errors.Error() != "" {
-		err = append(err, m.Errors.Error())
-	}
-
-	return strings.Join(err, ", ")
-}
-
-func (m Message2) Error() string {
-	err := []string{}
-	if m.Message != "" {
-		err = append(err, m.Message)
-	}
-
-	if m.DeveloperHint != "" {
-		err = append(err, m.DeveloperHint)
-	}
-
-	for _, e := range m.Errors.CustomerGroup.Errors {
-		if e.Error() != "" {
-			err = append(err, e.Error())
-		}
-	}
-
-	return strings.Join(err, ", ")
-}
-
-func (m Message3) Error() string {
-	err := []string{}
-	if m.Message != "" {
-		err = append(err, m.Message)
-	}
-
-	if m.DeveloperHint != "" {
-		err = append(err, m.DeveloperHint)
-	}
-
-	for _, e := range m.Errors {
-		if e != "" {
-			err = append(err, e)
-		}
-	}
-
-	return strings.Join(err, ", ")
-}
-
 type Error struct {
 	PropertyName  string      `json:"propertyName"`
 	ErrorMessage  string      `json:"errorMessage"`
@@ -583,7 +591,6 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 	err := json.Unmarshal(data, &str)
 	if err == nil {
 		e.ErrorMessage = str
-		log.Println("1")
 		return nil
 	}
 
@@ -591,12 +598,10 @@ func (e *Error) UnmarshalJSON(data []byte) error {
 	a := alias(*e)
 	err = json.Unmarshal(data, &a)
 	if err != nil {
-		log.Println("2")
 		return err
 	}
 
 	*e = Error(a)
-	log.Println("3")
 	return nil
 }
 
