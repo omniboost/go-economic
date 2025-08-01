@@ -544,9 +544,45 @@ func (m Message3) Error() string {
 	return strings.Join(err, ", ")
 }
 
+// {
+//   "message": "Validation failed. 1 error found.",
+//   "errorCode": "E04300",
+//   "developerHint": "Inspect validation errors and correct your request.",
+//   "logId": "9684637b5b015b28-AMS",
+//   "httpStatusCode": 400,
+//   "errors": [
+//     {
+//       "arrayIndex": 0,
+//       "entries": {
+//         "items": [
+//           {
+//             "arrayIndex": 4,
+//             "customer": {
+//               "errors": [
+//                 {
+//                   "propertyName": "customer",
+//                   "errorMessage": "Customer '44142815' is barred.",
+//                   "errorCode": "E06820",
+//                   "inputValue": 44142815,
+//                   "developerHint": "Find a list of customers at https://restapi.e-conomic.com/customers ."
+//                 }
+//               ]
+//             }
+//           }
+//         ]
+//       }
+//     }
+//   ],
+//   "logTime": "2025-08-01T11:42:59",
+//   "errorCount": 1
+// }
+
 type ErrorCollection []struct {
 	ArrayIndex int `json:"arrayIndex"`
-	Account    struct {
+	Customer   struct {
+		Errors []Error `json:"errors"`
+	} `json:"customer"`
+	Account struct {
 		Errors []Error `json:"errors"`
 	} `json:"account"`
 	Entries struct {
@@ -561,6 +597,9 @@ func (cc ErrorCollection) Error() string {
 	err := []string{}
 
 	for _, c := range cc {
+		for _, e := range c.Customer.Errors {
+			err = append(err, e.Error())
+		}
 		for _, e := range c.Account.Errors {
 			err = append(err, e.Error())
 		}
