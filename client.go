@@ -591,6 +591,9 @@ type ErrorCollection []struct {
 	Type struct {
 		Errors []Error `json:"errors"`
 	} `json:"type"`
+	Date struct {
+		Errors []Error `json:"errors"`
+	} `json:"date"`
 }
 
 func (cc ErrorCollection) Error() string {
@@ -610,6 +613,12 @@ func (cc ErrorCollection) Error() string {
 
 	for _, c := range cc {
 		for _, e := range c.Type.Errors {
+			err = append(err, e.Error())
+		}
+	}
+
+	for _, c := range cc {
+		for _, e := range c.Date.Errors {
 			err = append(err, e.Error())
 		}
 	}
